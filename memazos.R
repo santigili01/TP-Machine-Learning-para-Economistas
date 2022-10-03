@@ -1,6 +1,6 @@
 # Levantar datos:
 rm(list = ls())
-setwd('C:/Users/Santiago/Desktop/UTDT/S6/MLE/Tp/Materiales para el TP-20221003')
+setwd('C:/Users/Santiago/Documents/GitHub/TP-Machine-Learning-para-Economistas')
 load('Colisiones.RData')
 dim(Colisiones) # Datos para el TP
 
@@ -25,7 +25,8 @@ dim(Colisiones)
 #which(colnames(Colisiones) == "FREC_SINIESTRO_SIN_CULPA_ANYO_4")
 Colisiones[,which(colnames(Colisiones) == 'FREC_SINIESTRO_TOTAL_ANYO_1'):which(colnames(Colisiones) == "FREC_SINIESTRO_SIN_CULPA_ANYO_4")] <- NULL
 Colisiones[,which(colnames(Colisiones) == 'SUMA_COLISION_4_ANYOS'):which(colnames(Colisiones) == "ANYOS_SIN_SINIESTRO_SIN_CULPA")] <- NULL
-
+#Dropeamos PUERTAS
+Colisiones[,grep("PUERTAS", colnames(Colisiones))] = NULL
 
 
 
@@ -46,7 +47,26 @@ c_mono = mean(Colisiones$CILINDRADA[Colisiones$TIPO_VEHICULO == "monovolumen"], 
 c_suv = mean(Colisiones$CILINDRADA[Colisiones$TIPO_VEHICULO == "todoterreno"], na.rm = TRUE)
 c_tur = mean(Colisiones$CILINDRADA[Colisiones$TIPO_VEHICULO == "turismo"], na.rm = TRUE)
 
-summary(Colisiones$NMARCA)
+#Reemplazamos las medias que nos quedan
+for (i in 1:dim(Colisiones)[2]){
+  Colisiones[which(is.na(Colisiones[,i])),i] = mean(Colisiones[,i], na.rm = T) #Reemplazo NAs por medias
+}
+
+
+##Cambio los NA por las medias correspondientes
+peso_na = which(is.na(Colisiones$PESO))
+mono = which(Colisiones$TIPO_VEHICULO=="monovolumen")
+suv = which(Colisiones$TIPO_VEHICULO=="todoterreno")
+turismo = which(Colisiones$TIPO_VEHICULO=="turismo")
+
+Colisiones$PESO[intersect(mono, peso_na)] = w_mono
+Colisiones$PESO[intersect(suv, peso_na)] = w_suv
+Colisiones$PESO[intersect(turismo, peso_na)] = w_tur
+
+cil_na = which(is.na(Colisiones$CILINDRADA))
+Colisiones$CILINDRADA[intersect(mono, cil_na)] = c_mono
+Colisiones$CILINDRADA[intersect(suv, cil_na)] = c_suv
+Colisiones$CILINDRADA[intersect(turismo, cil_na)] = c_tur
 
 ##library(data.table)
 #####MULTICOLINEARIDAD
