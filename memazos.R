@@ -47,11 +47,6 @@ c_mono = mean(Colisiones$CILINDRADA[Colisiones$TIPO_VEHICULO == "monovolumen"], 
 c_suv = mean(Colisiones$CILINDRADA[Colisiones$TIPO_VEHICULO == "todoterreno"], na.rm = TRUE)
 c_tur = mean(Colisiones$CILINDRADA[Colisiones$TIPO_VEHICULO == "turismo"], na.rm = TRUE)
 
-#Reemplazamos las medias que nos quedan
-for (i in 1:dim(Colisiones)[2]){
-  Colisiones[which(is.na(Colisiones[,i])),i] = mean(Colisiones[,i], na.rm = T) #Reemplazo NAs por medias
-}
-
 
 ##Cambio los NA por las medias correspondientes
 peso_na = which(is.na(Colisiones$PESO))
@@ -67,6 +62,11 @@ cil_na = which(is.na(Colisiones$CILINDRADA))
 Colisiones$CILINDRADA[intersect(mono, cil_na)] = c_mono
 Colisiones$CILINDRADA[intersect(suv, cil_na)] = c_suv
 Colisiones$CILINDRADA[intersect(turismo, cil_na)] = c_tur
+
+#Reemplazamos las medias que nos quedan
+for (i in 1:dim(Colisiones)[2]){
+  Colisiones[which(is.na(Colisiones[,i])),i] = mean(Colisiones[,i], na.rm = T) #Reemplazo NAs por medias
+}
 
 ##library(data.table)
 #####MULTICOLINEARIDAD
